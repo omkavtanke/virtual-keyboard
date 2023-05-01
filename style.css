@@ -1,1 +1,32 @@
-
+*{
+    padding: 0;
+    margin: 0;
+}
+.input-wrapper{
+    width: 820px;
+    margin: 50px auto 20px auto;
+}
+.textarea{
+    width: 100%;
+    height: 200px;
+    padding: 5px;
+    border-radius: 10px;
+}
+.keyboard {
+    border: 3px solid black;
+    border-radius: 10px;
+    width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 15px;
+}
+.key{
+    padding: 10px;
+    min-width: 50px;
+    border-radius: 10px;
+    margin: 5px 2px 0 0;
+    transition: color .3s ease;
+}
+.pressed{
+    background-color: #545454;
+}
