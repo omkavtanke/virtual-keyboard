@@ -13,7 +13,7 @@ const keys = [
 {key: '-', modKey: '_', data: 'Minus'},
 {key: '=', modKey: '+', data: 'Equal'},
 {key: 'Backspace', value: ' ', data: 'Backspace'},
-{key: 'Tab', value: '   ', data: 'Tab'},
+{key: 'Tab', value: '\n', data: 'Tab'},
 {key: 'q', modKey: 'Q', data: 'KeyQ'},
 {key: 'w', modKey: 'W', data: 'KeyW'},
 {key: 'e', modKey: 'E', data: 'KeyE'},
@@ -62,7 +62,7 @@ const keys = [
 {key: 'Down', value: ' ', data: 'ArrowDown'},
 {key: 'Right', value: ' ', data: 'ArrowRight'}
 ];
-const BODY  = document.getElementById('page');
+const BODY = document.getElementById('page');
 
 
 function generateInput(){
@@ -78,8 +78,13 @@ function generateInput(){
 }
 
 function generateKeys(keyType) {
-  const keyboardSection = document.createElement('section');
+  const keyboardSection = document.querySelector('.keyboard-section');
+  if(keyboardSection){
+    keyboardSection.remove();
+  }
+  const newKeyboardSection = document.createElement('section');
   const keyboardWrapper = document.createElement('div');
+  newKeyboardSection.className = "keyboard-section";
   keyboardWrapper.className = "keyboard";
   for (let i = 0; i < keys.length; i++) {
     //create element button and add class
@@ -94,15 +99,17 @@ function generateKeys(keyType) {
 
     if(keyType === "key"){
       key.innerText = keys[i].key;
+      console.log("this is key");
     }else if(keyType === "modKey"){
+      console.log("this is modKey");
       keys[i].modKey ? key.innerText = keys[i].modKey : key.innerText = keys[i].key;
     }else{
-      console.log("function key need argument")
+      console.log("function key need argument");
     }
-    keyboardWrapper.appendChild(key)
+    keyboardWrapper.appendChild(key);
   }
-  keyboardSection.appendChild(keyboardWrapper);
-  BODY.appendChild(keyboardSection);
+  newKeyboardSection.appendChild(keyboardWrapper);
+  BODY.appendChild(newKeyboardSection);
 }
 
 function addIcons(){
@@ -164,6 +171,16 @@ function moveCursorUp(){
   }
 }
 
+
+// function setKeyMod (){
+//   const caps = document.querySelector(".Caps");
+//   if(caps.classList.contains("pressed")){
+//     generateKeys("modKey");
+//     caps.classList.add("pressed")
+//   }else if(!caps.classList.contains("pressed")){
+//     generateKeys("key");
+//   }
+// }
 function init(){
   generateInput();
   generateKeys("key");
@@ -203,6 +220,7 @@ function init(){
     pressedKey.classList.add("pressed");
   })
   document.addEventListener("keyup", event => {
+    console.log(event);
     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
     pressedKey.classList.remove("pressed");
 })
@@ -223,6 +241,23 @@ function init(){
   const upArrow = document.querySelector('.Up');
   upArrow.addEventListener("click", moveCursorUp);
   upArrow.removeEventListener("click", setValue);
+
+//add listener to caps key(on keyboard click)
+//   document.addEventListener("keydown", event => {
+//     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
+//     if(event.code === "ShiftLeft" || event.code === ""){
+//       pressedKey.classList.add("pressed");
+//       setKeyMod();
+//     }
+//   })
+//   document.addEventListener("keyup", event => {
+//     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
+//     if(event.code === "ShiftLeft" || event.code === ""){
+//       pressedKey.classList.remove("pressed");
+//       setKeyMod();
+//     }
+//   })
+
 }
 init()
 
