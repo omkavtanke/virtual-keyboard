@@ -23,10 +23,44 @@
 .key{
     padding: 10px;
     min-width: 50px;
+    max-height: 40px;
     border-radius: 10px;
     margin: 5px 2px 0 0;
     transition: color .3s ease;
+    cursor: pointer;
+    background-color: #f3f3f3;
+}
+.key:hover{
+    background-color: #c9c9c9;
+}
+.pressed:hover{
+    background-color: #a2a2a2;
 }
 .pressed{
-    background-color: #545454;
+    box-shadow: 1px 2px 5px 1px #b0b0b0;
+    background-color: #a2a2a2;
 }
+
+/*styles for keys*/
+.Tab{
+    min-width: 72px;
+}
+.vertical-symbol{
+    min-width: 65px;
+}
+
+.Caps,
+.Enter{
+    min-width: 94px;
+}
+
+.Lshift,
+.Rshift{
+    min-width: 120px;
+}
+.Space{
+    min-width: 345px;
+}
+
+/*styles for icons*/
+
