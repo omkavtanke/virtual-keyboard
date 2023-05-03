@@ -82,9 +82,7 @@ function generateInput() {
 
 function generateKeys(keyType) {
   const keyboardSection = document.querySelector('.keyboard-section');
-  if (keyboardSection) {
-    keyboardSection.remove();
-  }
+
   const newKeyboardSection = document.createElement('section');
   const keyboardWrapper = document.createElement('div');
   newKeyboardSection.className = 'keyboard-section';
@@ -99,25 +97,38 @@ function generateKeys(keyType) {
       key.className = `key ${keys[i].key}`;
     }
 
-    //  add data for value of key
-    if(keys[i].value) {
-      key.dataset.value = keys[i].value;
-    }else{
-      key.dataset.value = keys[i].key;
-    }
-
     //  add data for code of key
     key.dataset.code = keys[i].data;
 
     if (keyType === 'key') {
       key.innerText = keys[i].key;
+
+      //  add data for value of key
+      if(keys[i].value) {
+        key.dataset.value = keys[i].value;
+      }else{
+        key.dataset.value = keys[i].key;
+      }
     } else if (keyType === 'modKey') {
       keys[i].modKey ? key.innerText = keys[i].modKey : key.innerText = keys[i].key;
+
+      //  add data for value of key
+      if(keys[i].value) {
+        key.dataset.value = keys[i].value;
+      }else{
+        key.dataset.value = keys[i].modKey;
+      }
     }
     keyboardWrapper.appendChild(key);
   }
   newKeyboardSection.appendChild(keyboardWrapper);
-  BODY.appendChild(newKeyboardSection);
+  if (keyboardSection) {
+    keyboardSection.remove();
+    const textareaWrapper = document.querySelector('.input-wrapper');
+    textareaWrapper.insertAdjacentHTML('afterend', newKeyboardSection.outerHTML);
+  }else{
+    BODY.appendChild(newKeyboardSection);
+  }
 }
 
 function addIcons() {
@@ -138,6 +149,7 @@ function addIcons() {
   rightArrow.innerHTML = "";
   rightArrow.insertAdjacentHTML('afterbegin', '&rarr;');
 }
+
 function setValue() {
   const keyValue = this.dataset.value;
   const textarea = document.querySelector('.textarea');
@@ -179,16 +191,42 @@ function moveCursorUp() {
   }
 }
 
+function addListenerClickShift() {
+  const leftShift = document.querySelector('.Lshift');
+  const rightShift = document.querySelector('.Rshift');
+  const shift = [];
+  shift.push(leftShift);
+  shift.push(rightShift);
 
-// function setKeyMod (){
-//   const caps = document.querySelector(".Caps");
-//   if(caps.classList.contains("pressed")){
-//     generateKeys("modKey");
-//     caps.classList.add("pressed")
-//   }else if(!caps.classList.contains("pressed")){
-//     generateKeys("key");
-//   }
-// }
+  shift.forEach(elem => {
+    elem.addEventListener('mousedown', () => {
+      generateKeys("modKey");
+      elem.classList.add("pressed");
+      addIcons();
+      //  add listener to keys
+      const key = document.querySelectorAll('.key');
+      key.forEach(elem => {
+        elem.addEventListener('click', setValue)
+      });
+      addListenerClickShift()
+    })
+  })
+
+  shift.forEach(elem => {
+    elem.addEventListener('mouseup', () => {
+      generateKeys("key");
+      addIcons();
+      //  add listener to keys
+      const key = document.querySelectorAll('.key');
+      key.forEach(elem => {
+        elem.addEventListener('click', setValue)
+      });
+      addListenerClickShift()
+    })
+  })
+
+}
+
 function addText() {
   const text = document.createElement('h3');
   text.innerText = 'сделано на windows. пока не добавил смену языка. пожалуйста напишите мне скину ссылку на пул реквест';
@@ -237,7 +275,6 @@ function init() {
     pressedKey.classList.add('pressed');
   })
   document.addEventListener('keyup', event => {
-    console.log(event);
     const pressedKey = document.querySelector(`[data-code='${event.code}']`);
     pressedKey.classList.remove('pressed');
 })
@@ -260,21 +297,30 @@ function init() {
   upArrow.addEventListener('click', moveCursorUp);
   upArrow.removeEventListener('click', setValue);
 
-//add listener to caps key(on keyboard click)
-//   document.addEventListener("keydown", event => {
-//     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
-//     if(event.code === "ShiftLeft" || event.code === ""){
-//       pressedKey.classList.add("pressed");
-//       setKeyMod();
-//     }
-//   })
-//   document.addEventListener("keyup", event => {
-//     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
-//     if(event.code === "ShiftLeft" || event.code === ""){
-//       pressedKey.classList.remove("pressed");
-//       setKeyMod();
-//     }
-//   })
+// add listener to caps key(on keyboard click)
+  document.addEventListener("keydown", event => {
+    if(event.code === "ShiftLeft" || event.code === ""){
+      generateKeys("modKey");
+      const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
+      pressedKey.classList.add("pressed");
+      addIcons();
+      //  add listener to keys
+      const key = document.querySelectorAll('.key');
+      key.forEach(elem => {elem.addEventListener('click', setValue)});
+    }
+  })
+  document.addEventListener("keyup", event => {
+    if(event.code === "ShiftLeft" || event.code === ""){
+      generateKeys("key");
+      addIcons();
+      //  add listener to keys
+      const key = document.querySelectorAll('.key');
+      key.forEach(elem => {elem.addEventListener('click', setValue)});
+    }
+  })
+
+  //  add listener for (click on virtual keyboard)
+addListenerClickShift();
 
   addText();
 }
