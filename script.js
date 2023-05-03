@@ -235,7 +235,7 @@ function addText() {
   text.innerText = 'сделано на windows. пока не добавил смену языка. \n ссылка на пул реквест :';
   text.className = 'comment';
   BODY.appendChild(text);
-  document.querySelector('.comment').insertAdjacentHTML('beforeend', '<a href="https://github.com/omkavtanke/virtual-keyboard/pull/3">нажми</a>')
+  document.querySelector('.comment').insertAdjacentHTML('beforeend', '<a href="https://github.com/omkavtanke/virtual-keyboard/pull/3">нажми</a>');
 }
 
 function init() {
