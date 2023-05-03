@@ -38,7 +38,7 @@ const keys = [
   { key: 'k', modKey: 'K', data: 'KeyK' },
   { key: 'l', modKey: 'L', data: 'KeyL' },
   { key: ';', modKey: ':', data: 'Semicolon' },
-  { key: "'", modKey: '"', data: 'Quote' },
+  { key: '\'', modKey: '"', data: 'Quote' },
   { key: 'Enter', value: '\n', data: 'Enter' },
   {
     key: 'Shift', class: 'Lshift', value: ' ', data: 'ShiftLeft',
@@ -82,9 +82,7 @@ function generateInput() {
 
 function generateKeys(keyType) {
   const keyboardSection = document.querySelector('.keyboard-section');
-  if (keyboardSection) {
-    keyboardSection.remove();
-  }
+
   const newKeyboardSection = document.createElement('section');
   const keyboardWrapper = document.createElement('div');
   newKeyboardSection.className = 'keyboard-section';
@@ -93,17 +91,10 @@ function generateKeys(keyType) {
     //  create element button and add class
 
     const key = document.createElement('button');
-    if(keys[i].class) {
+    if (keys[i].class) {
       key.className = `key ${keys[i].class}`;
-    }else{
+    } else {
       key.className = `key ${keys[i].key}`;
-    }
-
-    //  add data for value of key
-    if(keys[i].value) {
-      key.dataset.value = keys[i].value;
-    }else{
-      key.dataset.value = keys[i].key;
     }
 
     //  add data for code of key
@@ -111,13 +102,37 @@ function generateKeys(keyType) {
 
     if (keyType === 'key') {
       key.innerText = keys[i].key;
+
+      //  add data for value of key
+      if (keys[i].value) {
+        key.dataset.value = keys[i].value;
+      } else {
+        key.dataset.value = keys[i].key;
+      }
     } else if (keyType === 'modKey') {
-      keys[i].modKey ? key.innerText = keys[i].modKey : key.innerText = keys[i].key;
+      if (keys[i].modKey) {
+        key.innerText = keys[i].modKey;
+      } else {
+        key.innerText = keys[i].key;
+      }
+
+      //  add data for value of key
+      if (keys[i].value) {
+        key.dataset.value = keys[i].value;
+      } else {
+        key.dataset.value = keys[i].modKey;
+      }
     }
     keyboardWrapper.appendChild(key);
   }
   newKeyboardSection.appendChild(keyboardWrapper);
-  BODY.appendChild(newKeyboardSection);
+  if (keyboardSection) {
+    keyboardSection.remove();
+    const textareaWrapper = document.querySelector('.input-wrapper');
+    textareaWrapper.insertAdjacentHTML('afterend', newKeyboardSection.outerHTML);
+  } else {
+    BODY.appendChild(newKeyboardSection);
+  }
 }
 
 function addIcons() {
@@ -126,18 +141,19 @@ function addIcons() {
   const downArrow = document.querySelector('.Down');
   const rightArrow = document.querySelector('.Right');
 
-  leftArrow.innerHTML = "";
+  leftArrow.innerHTML = '';
   leftArrow.insertAdjacentHTML('afterbegin', '&larr;');
 
-  upArrow.innerHTML = "";
+  upArrow.innerHTML = '';
   upArrow.insertAdjacentHTML('afterbegin', '&uarr;');
 
-  downArrow.innerHTML = "";
+  downArrow.innerHTML = '';
   downArrow.insertAdjacentHTML('afterbegin', '&darr;');
 
-  rightArrow.innerHTML = "";
+  rightArrow.innerHTML = '';
   rightArrow.insertAdjacentHTML('afterbegin', '&rarr;');
 }
+
 function setValue() {
   const keyValue = this.dataset.value;
   const textarea = document.querySelector('.textarea');
@@ -148,7 +164,7 @@ function setValue() {
 function moveCursorLeft() {
   const textarea = document.querySelector('.textarea');
   const currPos = textarea.selectionEnd;
-  if(currPos !== 0) {
+  if (currPos !== 0) {
     const prePos = currPos - 1;
     textarea.setSelectionRange(prePos, prePos);
   }
@@ -173,22 +189,47 @@ function moveCursorUp() {
   const textarea = document.querySelector('.textarea');
   const currPos = textarea.selectionEnd;
   const countOfSymbolsPerLine = 111;
-  if(currPos >= 111) {
+  if (currPos >= 111) {
     const prevPos = currPos - countOfSymbolsPerLine;
     textarea.setSelectionRange(prevPos, prevPos);
   }
 }
 
+function addListenerClickShift() {
+  const leftShift = document.querySelector('.Lshift');
+  const rightShift = document.querySelector('.Rshift');
+  const shift = [];
+  shift.push(leftShift);
+  shift.push(rightShift);
 
-// function setKeyMod (){
-//   const caps = document.querySelector(".Caps");
-//   if(caps.classList.contains("pressed")){
-//     generateKeys("modKey");
-//     caps.classList.add("pressed")
-//   }else if(!caps.classList.contains("pressed")){
-//     generateKeys("key");
-//   }
-// }
+  shift.forEach((elem) => {
+    elem.addEventListener('mousedown', () => {
+      generateKeys('modKey');
+      elem.classList.add('pressed');
+      addIcons();
+      //  add listener to keys
+      const key = document.querySelectorAll('.key');
+      key.forEach((el) => {
+        el.addEventListener('click', setValue);
+      });
+      addListenerClickShift();
+    });
+  });
+
+  shift.forEach((elem) => {
+    elem.addEventListener('mouseup', () => {
+      generateKeys('key');
+      addIcons();
+      //  add listener to keys
+      const key = document.querySelectorAll('.key');
+      key.forEach((el) => {
+        el.addEventListener('click', setValue);
+      });
+      addListenerClickShift();
+    });
+  });
+}
+
 function addText() {
   const text = document.createElement('h3');
   text.innerText = 'сделано на windows. пока не добавил смену языка. пожалуйста напишите мне скину ссылку на пул реквест';
@@ -205,44 +246,41 @@ function init() {
   document.querySelector('.Rshift').insertAdjacentHTML('afterend', '<br>');
   addIcons();
 
-//  add listener to keys
+  //  add listener to keys
   const key = document.querySelectorAll('.key');
-  key.forEach(elem => {elem.addEventListener('click', setValue)});
+  key.forEach((elem) => { elem.addEventListener('click', setValue); });
 
-  key.forEach(elem => {
+  key.forEach((elem) => {
     elem.addEventListener('mousedown', () => {
       elem.classList.add('pressed');
-    })
+    });
   });
 
-  key.forEach(elem => {
+  key.forEach((elem) => {
     elem.addEventListener('mouseup', () => {
       elem.classList.remove('pressed');
-    })
+    });
   });
 
-
-//  add listener for textarea (in addition to keep area focused)
+  //  add listener for textarea (in addition to keep area focused)
 
   const textarea = document.querySelector('.textarea');
   textarea.addEventListener('blur', () => {
     textarea.focus();
-  })
+  });
 
+  //  add listener to document (in addition to get clicked key on keyboard)
 
-//  add listener to document (in addition to get clicked key on keyboard)
-
-  document.addEventListener('keydown', event => {
+  document.addEventListener('keydown', (event) => {
     const pressedKey = document.querySelector(`[data-code='${event.code}']`);
     pressedKey.classList.add('pressed');
-  })
-  document.addEventListener('keyup', event => {
-    console.log(event);
+  });
+  document.addEventListener('keyup', (event) => {
     const pressedKey = document.querySelector(`[data-code='${event.code}']`);
     pressedKey.classList.remove('pressed');
-})
+  });
 
-//  add listener for arrows
+  //  add listener for arrows
 
   const leftArrow = document.querySelector('.Left');
   leftArrow.addEventListener('click', moveCursorLeft);
@@ -260,24 +298,29 @@ function init() {
   upArrow.addEventListener('click', moveCursorUp);
   upArrow.removeEventListener('click', setValue);
 
-//add listener to caps key(on keyboard click)
-//   document.addEventListener("keydown", event => {
-//     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
-//     if(event.code === "ShiftLeft" || event.code === ""){
-//       pressedKey.classList.add("pressed");
-//       setKeyMod();
-//     }
-//   })
-//   document.addEventListener("keyup", event => {
-//     const pressedKey = document.querySelector(`[data-code="${event.code}"]`);
-//     if(event.code === "ShiftLeft" || event.code === ""){
-//       pressedKey.classList.remove("pressed");
-//       setKeyMod();
-//     }
-//   })
+  // add listener to caps key(on keyboard click)
+  document.addEventListener('keydown', (event) => {
+    if (event.code === 'ShiftLeft' || event.code === '') {
+      generateKeys('modKey');
+      const pressedKey = document.querySelector(`[data-code='${event.code}']`);
+      pressedKey.classList.add('pressed');
+      addIcons();
+      //  add listener to keys
+      key.forEach((elem) => { elem.addEventListener('click', setValue); });
+    }
+  });
+  document.addEventListener('keyup', (event) => {
+    if (event.code === 'ShiftLeft' || event.code === '') {
+      generateKeys('key');
+      addIcons();
+      //  add listener to keys
+      key.forEach((elem) => { elem.addEventListener('click', setValue); });
+    }
+  });
+
+  //  add listener for (click on virtual keyboard)
+  addListenerClickShift();
 
   addText();
 }
 init();
-
-
