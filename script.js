@@ -232,9 +232,10 @@ function addListenerClickShift() {
 
 function addText() {
   const text = document.createElement('h3');
-  text.innerText = 'сделано на windows. пока не добавил смену языка. пожалуйста напишите мне скину ссылку на пул реквест';
+  text.innerText = 'сделано на windows. пока не добавил смену языка. \n ссылка на пул реквест :';
   text.className = 'comment';
   BODY.appendChild(text);
+  document.querySelector('.comment').insertAdjacentHTML('beforeend', '<a href="https://github.com/omkavtanke/virtual-keyboard/pull/3">нажми</a>')
 }
 
 function init() {
